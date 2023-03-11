@@ -1,0 +1,4 @@
+enum SubjectType{
+  lab,
+  lecture,
+}
