@@ -7,14 +7,14 @@ class SubjectData {
   final String name;
   final String type;
   final String id;
-  int attendedCount;
+  int attendCount;
   int totalCount;
 
   SubjectData({
     required this.name,
     required this.type,
     required this.id,
-    this.attendedCount = 0,
+    this.attendCount = 0,
     this.totalCount = 0,
   });
 
@@ -25,7 +25,7 @@ class SubjectData {
       'name': name,
       'type': type,
       'id': id,
-      'attendedCount': attendedCount,
+      'attendCount': attendCount,
       'totalCount': totalCount,
     };
   }
@@ -35,7 +35,7 @@ class SubjectData {
       name: map['name'] as String,
       type: map['type'] as String,
       id: map['id'] as String,
-      attendedCount: map['attendedCount'] as int,
+      attendCount: map['attendCount'] as int,
       totalCount: map['totalCount'] as int,
     );
   }

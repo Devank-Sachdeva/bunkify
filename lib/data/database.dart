@@ -1,5 +1,4 @@
-import 'dart:async';
-import 'package:bunkify/models/data_models/subject.dart';
+// import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -10,7 +9,9 @@ class DatabaseService {
 
   static Database? _database;
   Future<Database> get database async {
+    print("database milgya");
     if (_database != null) return _database!;
+    print("new db initialised");
     // Initialize the DB first time it is accessed
     _database = await _initDatabase();
     return _database!;
@@ -34,17 +35,5 @@ class DatabaseService {
     await db.execute(
       'CREATE TABLE global(id TEXT PRIMARY KEY, name TEXT, type TEXT,attendCount INTEGER, totalCount INTEGER)',
     );
-  }
-
-  Future<void> createSubjectTable(SubjectData subject) async {
-    final db = await _databaseService.database;
-    final String subjectName = subject.name;
-    await db.execute(
-        "CREATE TABLE {$subjectName} (id TEXT PRIMARY KEY,date TEXT,didAttend integer,FOREIGN KEY (subject_id) REFERENCES subjects (id)");
-    await _updateNewSubject(db, subject);
-  }
-
-  Future<void> _updateNewSubject(Database db, SubjectData subject) async {
-    await db.insert(subject.name, subject.toMap(),conflictAlgorithm: ConflictAlgorithm.replace);
   }
 }
