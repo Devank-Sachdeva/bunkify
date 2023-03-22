@@ -1,6 +1,7 @@
-import 'package:bunkify/data/database_handler.dart';
-import 'package:bunkify/models/data_models/subject.dart';
+import 'package:bunkify/utils/subject_tile.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -10,60 +11,67 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // void createObject() async{
-  //   DatabaseHandler handler = await DatabaseHandler.create();
-  // }
+  DateTime _selectedDay = DateTime.now();
+  DateTime _focusedDay = DateTime.now();
 
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  // }
-  TextEditingController controller = TextEditingController();
-  String? userValue;
   @override
   Widget build(BuildContext context) {
-    List<Map<int, String>> dates = [
-      {14: "Tue"},
-      {15: "Wed"},
-      {16: "Thu"},
-      {17: "Fri"},
-      {18: "Sat"}
-    ];
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color(0xff040133),
-        appBar: AppBar(
-          backgroundColor: Color(0xff040133),
-          title: Center(child: Text("16 Feb 2023")),
-        ),
-        body: Column(children: [
-          TextField(
-            controller: controller,
-            onChanged: (value) => userValue = value,
-          ),
-          ElevatedButton(
-              onPressed: () async {
-                DatabaseHandler handler = await DatabaseHandler.create();
-                SubjectData data = SubjectData(
-                    name: userValue ?? " ", type: "Lecture", id: "01");
-                handler.createSubjectTable(data);
-                controller.clear();
+        body: Column(
+          children: [
+            TableCalendar(
+              firstDay: DateTime.utc(1969),
+              lastDay: DateTime.utc(2100),
+              focusedDay: _focusedDay,
+              calendarFormat: CalendarFormat.week,
+              startingDayOfWeek: StartingDayOfWeek.monday,
+              onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay;
+                  // print(_selectedDay);
+                });
               },
-              child: Text("Add"))
-        ]),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            DatabaseHandler handler = await DatabaseHandler.create();
-            handler.viewDataBase();
-          },
-          child: const Icon(Icons.add),
+              onDayLongPressed: (selectedDay, focusedDay) {
+                setState(() {
+                  if (selectedDay == _selectedDay) {
+                    _focusedDay = DateTime.now();
+                    _selectedDay = DateTime.now();
+                  }
+                });
+              },
+              selectedDayPredicate: (day) {
+                return isSameDay(day, _selectedDay);
+              },
+              headerVisible: true,
+              headerStyle: HeaderStyle(
+                titleCentered: true,
+                titleTextStyle: TextStyle(fontSize: 18.0),
+                formatButtonVisible: false,
+                formatButtonDecoration: BoxDecoration(
+                  border: Border.all(),
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                formatButtonTextStyle: TextStyle(fontSize: 15.0),
+                formatButtonShowsNext: true,
+                leftChevronIcon: Icon(
+                  Icons.chevron_left_rounded,
+                  size: 28,
+                ),
+                rightChevronIcon: Icon(
+                  Icons.chevron_right_rounded,
+                  size: 28,
+                ),
+              ),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              itemBuilder: (context, index) => SubjectTile(),
+            )
+          ],
         ),
-        // body: Column(children: ListView.builder(itemBuilder: (context, index) {
-        //   return ListTile(
-        //     subtitle: dates[index],
-        //   )
-        // })),
       ),
     );
   }
